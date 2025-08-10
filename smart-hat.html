@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SolarHat — Smart Wearable Guide</title>
+  
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root{
+      --page-bg: #f0f9ff;
+      --nav-bg: #ffffff;
+      --muted: #5e718d;
+      --text: #0f1a2f;
+      --accent: #0ea5a4;
+      --accent-light: #d1f0ef;
+      --card-radius: 18px;
+      --nav-radius: 14px;
+      --max-width: 1100px;
+      --shadow: 0 6px 16px rgba(2, 6, 23, 0.08);
+      --shadow-hover: 0 10px 25px rgba(2, 6, 23, 0.15);
+    }
+    
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;margin:0;font-family:'Inter',system-ui,-apple-system,"Segoe UI",Roboto,Arial;background:var(--page-bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
+    body{padding:0;display:flex;flex-direction:column;align-items:stretch}
+    
+    /* Mobile-first layout */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 16px;
+      width: 100%;
+    }
+    
+    /* HEADER */
+    .header {
+      background: var(--nav-bg);
+      box-shadow: var(--shadow);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .header-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .logo-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #0ea5a4, #2b9df4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(14, 165, 164, 0.2);
+    }
+    
+    .logo-icon svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+    
+    .logo-text {
+      font-weight: 800;
+      font-size: 20px;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+    
+    /* Mobile menu toggle */
+    .menu-toggle {
+      background: none;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .menu-toggle:active {
+      background: rgba(0,0,0,0.05);
+      transform: scale(0.95);
+    }
+    
+    .menu-icon {
+      width: 26px;
+      height: 26px;
+      stroke: var(--text);
+      stroke-width: 2;
+    }
+    
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 68px;
+      left: 0;
+      right: 0;
+      background: var(--nav-bg);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.1);
+      padding: 18px;
+      z-index: 99;
+      transform: translateY(-150%);
+      transition: transform 0.4s ease;
+      border-radius: 0 0 18px 18px;
+    }
+    
+    nav.active {
+      transform: translateY(0);
+    }
+    
+    nav ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 0;
+      margin: 0;
+    }
+    
+    nav li {
+      display: block;
+    }
+    
+    nav a {
+      display: block;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: all 0.2s;
+      font-size: 16px;
+    }
+    
+    nav a:hover, nav li.active a {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+    
+    /* Top status row */
+    .status-section {
+      background: white;
+      border-radius: var(--card-radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      margin-top: 16px;
+      border: 1px solid rgba(15, 23, 35, 0.05);
+    }
+    
+    .status-card {
+      padding: 18px;
+      border-radius: 14px;
+      background: rgba(14,165,164,0.03);
+      border: 1px solid rgba(14,165,164,0.1);
+      transition: transform 0.3s ease;
+    }
+    
+    .status-card:hover {
+      transform: translateY(-5px);
+    }
+    
+    .status-label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    
+    .status-label svg {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .status-value {
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--text);
+      margin-top: 8px;
+    }
+    
+    /* Controls */
+    .controls {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      background: var(--accent);
+      color: white;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      flex: 1;
+      min-width: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.2s;
+      box-shadow: 0 6px 12px rgba(14,165,164,0.2);
+      font-size: 16px;
+    }
+    
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 3px 8px rgba(14,165,164,0.15);
+    }
+    
+    .btn.gray {
+      background: white;
+      border: 1px solid rgba(15,23,35,0.1);
+      color: var(--muted);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+    
+    .btn svg {
+      width: 20px;
+      height: 20px;
+    }
+    
+    /* Hero cards */
+    .hero-head {
+      margin: 28px 0 20px;
+    }
+    
+    .hero-head h2 {
+      font-size: 24px;
+      margin-bottom: 6px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    
+    .hero-head p.lead {
+      color: var(--muted);
+      font-size: 16px;
+      max-width: 700px;
+    }
+    
+    .cards {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+    
+    .card {
+      background: #fff;
+      border-radius: var(--card-radius);
+      padding: 24px 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(15,23,35,0.03);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+    }
+    
+    .card:hover:after {
+      transform: scaleX(1);
+    }
+    
+    .card:active {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .card-logo {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    }
+    
+    .card-logo svg {
+      width: 34px;
+      height: 34px;
+      stroke-width: 1.5;
+    }
+    
+    .title {
+      font-weight: 800;
+      font-size: 18px;
+      margin: 0 0 8px;
+      color: var(--text);
+    }
+    
+    .desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    
+    /* Logo color classes */
+    .g-loc{background:linear-gradient(135deg,#2b9df4,#3ddbd9)}
+    .g-rent{background:linear-gradient(135deg,#ffb86b,#ff6b6b)}
+    .g-about{background:linear-gradient(135deg,#8b5cf6,#06b6d4)}
+    .g-serv{background:linear-gradient(135deg,#00c853,#66bb6a)}
+    .g-contact{background:linear-gradient(135deg,#ff6f91,#ff9a8b)}
+    .g-test{background:linear-gradient(135deg,#7c4dff,#536dfe)}
+    .g-care{background:linear-gradient(135deg,#ffa726,#ff7043)}
+    .g-faq{background:linear-gradient(135deg,#4dd0e1,#00838f)}
+    .g-blog{background:linear-gradient(135deg,#a78bfa,#f472b6)}
+    
+    .note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+      text-align: center;
+      padding: 16px;
+      background: rgba(15,23,35,0.03);
+      border-radius: 14px;
+      border: 1px dashed rgba(15,23,35,0.08);
+    }
+    
+    /* Location card expanded state */
+    .location-details {
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(15,23,35,0.05);
+    }
+    
+    .location-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+    
+    .location-label {
+      color: var(--muted);
+      font-weight: 500;
+    }
+    
+    .location-value {
+      font-weight: 700;
+      color: var(--text);
+    }
+    
+    /* Responsive adjustments */
+    @media (min-width: 768px) {
+      .menu-toggle {
+        display: none;
+      }
+      
+      nav {
+        position: static;
+        transform: none;
+        box-shadow: none;
+        padding: 0;
+      }
+      
+      nav ul {
+        flex-direction: row;
+        gap: 10px;
+      }
+      
+      .header {
+        padding: 16px 24px;
+      }
+      
+      .controls {
+        flex-wrap: nowrap;
+      }
+      
+      .btn {
+        min-width: auto;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .btn {
+        min-width: 100%;
+        margin-bottom: 10px;
+      }
+      
+      .hero-head h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 3L2 12l3 3v6h5v-5h4v5h5v-6l3-3-10-9zm0 9c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3z"/></svg>
+        </div>
+        <div class="logo-text">SolarHat</div>
+      </div>
+      
+      <button class="menu-toggle" id="menuToggle">
+        <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    
+    <nav id="mainNav">
+      <ul>
+        <li class="active"><a href="#home">Home</a></li>
+        <li><a href="#news">News</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#about">About</a></li>
+      </ul>
+    </nav>
+  </header>
+  
+  <div class="container">
+    <!-- TOP ROW: Location + controls -->
+    <section class="status-section">
+      <!-- Location card only -->
+      <div class="status-card" id="locCard" title="Location">
+        <div class="status-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-width="1.5"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="1.5"/></svg>
+          Current Location
+        </div>
+        <div class="status-value" id="coords">—</div>
+        
+        <div class="location-details">
+          <div class="location-row">
+            <span class="location-label">Accuracy:</span>
+            <span class="location-value" id="accuracy">—</span>
+          </div>
+          
+          <div class="controls" style="margin-top:16px">
+            <button class="btn gray" id="locBtn">Get Location</button>
+            <button class="btn gray" id="stopLocBtn" style="display:none">Stop</button>
+            <button class="btn gray" id="openMapsBtn" style="display:none">View Map</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="controls">
+        <button class="btn" id="speakExample">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white"><path d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" stroke-width="1.5"/></svg>
+          Play Demo Audio
+        </button>
+      </div>
+    </section>
+    
+    <!-- HERO: cards -->
+    <section class="hero" aria-label="Explore sections">
+      <div class="hero-head">
+        <h2>Explore SolarHat Features</h2>
+        <p class="lead">Tap any card to hear location-based audio guidance. Your SolarHat will provide context-aware information as you explore.</p>
+      </div>
+      
+      <div class="cards" role="list">
+        <!-- Card 1: Location -->
+        <article class="card" role="listitem" data-key="location" data-message="You are near the main plaza. Enjoy the panoramic view of the city.">
+          <div class="card-logo g-loc" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+            </svg>
+          </div>
+          <div class="title">Location Guide</div>
+          <p class="desc">Nearby points of interest</p>
+        </article>
+        
+        <!-- Card 2: Rent - Updated with Hat Icon -->
+        <article class="card" role="listitem" data-key="rent" data-message="Rent a SolarHat for your adventure. Available at multiple locations throughout the city.">
+          <div class="card-logo g-rent">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+            </svg>
+          </div>
+          <div class="title">Rent a Hat</div>
+          <p class="desc">Browse available rentals</p>
+        </article>
+        
+        <!-- Card 3: About -->
+        <article class="card" role="listitem" data-key="about" data-message="SolarHat: Sustainable wearable technology powered by sunlight with location-aware audio.">
+          <div class="card-logo g-about">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            </svg>
+          </div>
+          <div class="title">About Us</div>
+          <p class="desc">Our vision and technology</p>
+        </article>
+        
+        <!-- Card 4: Services -->
+        <article class="card" role="listitem" data-key="services" data-message="Services include audio tours, navigation assistance, and location-based information.">
+          <div class="card-logo g-serv">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+            </svg>
+          </div>
+          <div class="title">Services</div>
+          <p class="desc">What SolarHat offers</p>
+        </article>
+        
+        <!-- Card 5: Contact -->
+        <article class="card" role="listitem" data-key="contact" data-message="Contact SolarHat support at support@solarhat.com or call 1-800-SOLAR-HAT.">
+          <div class="card-logo g-contact">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+            </svg>
+          </div>
+          <div class="title">Contact Support</div>
+          <p class="desc">Get in touch with us</p>
+        </article>
+        
+        <!-- Card 6: Testimonials (replaced pricing) -->
+        <article class="card" role="listitem" data-key="testimonials" data-message="Our customers love the SolarHat experience. Read testimonials from satisfied users.">
+          <div class="card-logo g-test">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div class="title">Testimonials</div>
+          <p class="desc">Customer experiences</p>
+        </article>
+      </div>
+    </section>
+    
+    <div class="note">Tip: Tap any card to hear its message. Use the Get Location button for precise GPS positioning.</div>
+  </div>
+
+  <script>
+    /************************************************************************
+     * Mobile-optimized app behavior
+     * - Mobile menu toggle
+     * - Speech (TTS)
+     * - Card clicks speak messages
+     * - Geolocation watcher
+     ************************************************************************/
+
+    /* ---------- Mobile Menu Toggle ---------- */
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+    
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      mainNav.classList.toggle('active');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+        mainNav.classList.remove('active');
+      }
+    });
+
+    /* ---------- Speech utility ---------- */
+    function speak(text){
+      if(!('speechSynthesis' in window)){
+        alert('Text-to-speech is not supported in your browser');
+        return;
+      }
+      try {
+        // Cancel any ongoing speech
+        speechSynthesis.cancel();
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        
+        utterance.onerror = (event) => {
+          console.error('SpeechSynthesis Error:', event.error);
+        };
+        
+        speechSynthesis.speak(utterance);
+      } catch (e){
+        console.error('TTS error', e);
+      }
+    }
+
+    /* ---------- Cards: click to speak with animations ---------- */
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const msg = card.dataset.message || ('Opening ' + (card.dataset.key || 'section'));
+        speak(msg);
+        
+        // Click animation
+        card.animate([
+          { transform: 'scale(0.95)' },
+          { transform: 'scale(1)' }
+        ], {
+          duration: 200,
+          easing: 'ease-out'
+        });
+      });
+    });
+
+    /* ---------- Location: geolocation with proper permission handling ---------- */
+    const locBtnEl = document.getElementById('locBtn');
+    const stopLocBtnEl = document.getElementById('stopLocBtn');
+    const coordsEl = document.getElementById('coords');
+    const accuracyEl = document.getElementById('accuracy');
+    const openMapsBtn = document.getElementById('openMapsBtn');
+    
+    let watchId = null;
+    
+    function showLocationError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Location access denied. Please enable location services in your browser settings.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Location information is unavailable.");
+          break;
+        case error.TIMEOUT:
+          alert("The request to get location timed out.");
+          break;
+        case error.UNKNOWN_ERROR:
+          alert("An unknown error occurred.");
+          break;
+      }
+    }
+    
+    function updateLocationUI(position) {
+      const lat = position.coords.latitude.toFixed(6);
+      const lon = position.coords.longitude.toFixed(6);
+      const acc = Math.round(position.coords.accuracy);
+      
+      coordsEl.textContent = `${lat}, ${lon}`;
+      accuracyEl.textContent = `${acc} m`;
+      openMapsBtn.style.display = 'inline-block';
+      stopLocBtnEl.style.display = 'inline-block';
+      
+      // Color code accuracy
+      if (acc <= 30) {
+        accuracyEl.style.color = '#0ea5a4';
+      } else if (acc <= 100) {
+        accuracyEl.style.color = '#f59e0b';
+      } else {
+        accuracyEl.style.color = '#ef4444';
+      }
+      
+      // Speak location
+      speak(`Location acquired. Accuracy within ${acc} meters.`);
+    }
+    
+    function startLocationWatch() {
+      if (navigator.geolocation) {
+        locBtnEl.disabled = true;
+        locBtnEl.textContent = 'Locating...';
+        coordsEl.textContent = 'Locating...';
+        accuracyEl.textContent = '—';
+        
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        };
+        
+        watchId = navigator.geolocation.watchPosition(
+          position => {
+            updateLocationUI(position);
+            locBtnEl.textContent = 'Get Location';
+            locBtnEl.disabled = false;
+          },
+          error => {
+            showLocationError(error);
+            locBtnEl.textContent = 'Get Location';
+            locBtnEl.disabled = false;
+            coordsEl.textContent = 'Failed';
+          },
+          options
+        );
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+    
+    function stopLocationWatch() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+      stopLocBtnEl.style.display = 'none';
+      speak('Location tracking stopped');
+    }
+    
+    locBtnEl.addEventListener('click', startLocationWatch);
+    
+    stopLocBtnEl.addEventListener('click', stopLocationWatch);
+
+    openMapsBtn.addEventListener('click', () => {
+      const txt = coordsEl.textContent;
+      if (!txt || txt === '—' || txt === 'Locating...') return;
+      
+      const [lat, lon] = txt.split(',').map(s => s.trim());
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+      
+      // Try to open in a new tab
+      window.open(mapsUrl, '_blank');
+    });
+
+    /* Demo speak button */
+    document.getElementById('speakExample').addEventListener('click', () => {
+      speak(`SolarHat demo. Tap any card for location-specific information.`);
+    });
+  </script>
+</body>
+</html>
